@@ -71,10 +71,17 @@ def recruiter_register():
 def login():
     if 'username' in session:
         return redirect(url_for('index'))
+    else:
+        return render_template('login.html')
+
+@app.route('/student_login', methods=['POST', 'GET'])
+def student_login():
+    if 'username' in session:
+        return redirect(url_for('index'))
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if dbHandler.allowLogin(username, password):
+        if dbHandler.allowLoginStudent(username, password):
             session['username'] = username
             return redirect(url_for('index'))
         else:
@@ -82,6 +89,20 @@ def login():
     else:
         return render_template('login.html')
 
+@app.route('/recruiter_login', methods=['POST', 'GET'])
+def recruiter_login():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if dbHandler.allowLoginRecruiter(username, password):
+            session['username'] = username
+            return redirect(url_for('index'))
+        else:
+            return render_template('login.html', failedLogin="failed")
+    else:
+        return render_template('login.html')
 
 @app.route('/logout')
 def logout():

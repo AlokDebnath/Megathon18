@@ -37,7 +37,7 @@ def uniqrecruiter(username):
     else:
         return True
 
-def allowLogin(username, password):
+def allowLoginStudent(username, password):
     con = sql.connect("database.db")
     cur = con.cursor()
     cur.execute(
@@ -49,15 +49,18 @@ def allowLogin(username, password):
     else:
         con.commit()
         con.close()
-        con = sql.connect("database.db")
-        cur = con.cursor()
-        cur.execute(
+        return False
+
+def allowLoginRecruiter(username, password):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute(
         "SELECT username, password FROM recruiters WHERE username=='{0}' AND password=='{1}'".format(username, password))
-        if cur.fetchone():
-            con.commit()
-            con.close()
-            return True
-        else:
-            con.commit()
-            con.close()
-            return False
+    if cur.fetchone():
+        con.commit()
+        con.close()
+        return True
+    else:
+        con.commit()
+        con.close()
+        return False
