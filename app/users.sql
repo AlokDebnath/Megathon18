@@ -4,6 +4,8 @@ drop table if exists students;
         name text not null,
         username text not null unique,
         password text not null,
+        github text,
+        codeforces text,
         email text not null unique
     );
 

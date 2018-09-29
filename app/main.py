@@ -35,11 +35,9 @@ def index():
             jobopenings = dbHandler.getJobOpenings(username)
             return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
-            response = requests.get("http://api.open-notify.org/astros.json")
-            data = response.json()
-            print(data)
             resume = list_resume(username)
-            return render_template('student_dashboard.html', username=username, resume=resume, student=True)
+            studentdata = dbHandler.getStudentData(username)
+            return render_template('student_dashboard.html', username=username, resume=resume, student=True, studentdata=studentdata)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -61,6 +59,9 @@ def student_register():
         email = request.form['email']
         name = request.form['name']
         dbHandler.insertStudent(username, password, email, name)
+        upload_dir = './resumes/'
+        upload_dir = upload_dir + username
+        make_dir(upload_dir)
         session['username'] = username
         return redirect(url_for('index'))
     else:
@@ -141,7 +142,6 @@ def upload_resume():
             file = request.files['file']
             upload_dir = './resumes/'
             upload_dir = upload_dir + username
-            make_dir(upload_dir)
             filename = secure_filename(file.filename)
             file.save(os.path.join(upload_dir, filename))
     return redirect(url_for('index'))
@@ -154,7 +154,7 @@ def download_resume(username):
 @app.route('/deleter', methods = ['GET', 'POST'])
 def delete_resume():
     username = session['username']
-    resume = list_resume()
+    resume = list_resume(username)
     os.remove('./resumes/' + username + '/' + str(resume))
     return redirect(url_for('index'))
 
@@ -193,7 +193,8 @@ def search_candidate():
             username = request.form['search']
             name = dbHandler.getUser(username)
             resume = list_resume(username)
-            return render_template('student_dashboard.html', student=False, username=username, name=name[0], resume=resume)
+            studentdata = dbHandler.getStudentData(username)
+            return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])
@@ -205,6 +206,49 @@ def viewCompany():
         jobopenings = dbHandler.getJobOpenings(email)
         return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=False)
     return redirect(url_for('index'))
+
+@app.route('/github', methods=['GET', 'POST'])
+def add_github_link():
+    if 'username' in session:
+        if request.method == 'POST':
+            username = session['username']
+            link = request.form['github']
+            dbHandler.addGithubLink(link, username)
+    return redirect(url_for('index'))
+
+@app.route('/codeforces', methods=['GET', 'POST'])
+def add_codeforces_link():
+    if 'username' in session:
+        if request.method == 'POST':
+            username = session['username']
+            link = request.form['codeforces']
+            dbHandler.addCodeforcesLink(link, username)
+    return redirect(url_for('index'))
+
+def getGithubDetails(github_handle):
+    stars = 0
+    languages = []
+    response = requests.get("https://api.github.com/users/" + github_handle + "/repos")
+    data = response.json()
+    for repo in data:
+        stars = stars + repo['stargazers_count']
+        if repo['language']:
+            if repo['language'] not in languages:
+                languages.append(repo['language'])
+    print(stars)
+    print(languages)
+
+def getCodeforcesDetails(codeforces_handle):
+    rating = 0
+    rank = "unavailable"
+    response = requests.get("https://codeforces.com/api/user.info?handles=" + codeforces_handle)
+    data = response.json()
+    for user in data['result']:
+        rating = user['rating']
+        rank = user['rank']
+    print(rating)
+    print(rank)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
