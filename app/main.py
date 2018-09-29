@@ -31,7 +31,8 @@ def index():
             company = dbHandler.getCompany(username)
             return render_template('recruiter_dashboard.html', company=company[0])
         else:
-            return render_template('student_dashboard.html', username=username)
+            resume = list_resume()
+            return render_template('student_dashboard.html', username=username, resume=resume)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -117,6 +118,15 @@ def logout():
         session.pop('username', None)
     return redirect(url_for('index'))
 
+def list_resume():
+    username = session['username']
+    path = './resumes/' + username
+    onlyfiles = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    if len(onlyfiles) == 0:
+        return False
+    else:
+        return onlyfiles[0]
+
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_resume():
     if 'username' in session:
@@ -129,7 +139,7 @@ def upload_resume():
             make_dir(upload_dir)
             filename = secure_filename(file.filename)
             file.save(os.path.join(upload_dir, filename))
-            return '<p>File uploaded successfully</p><a href="/">Back</a>'
+            return redirect(url_for('index'))
     else:
         return redirect(url_for('index'))
 
