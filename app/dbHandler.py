@@ -111,3 +111,12 @@ def getJobs(title):
     con.commit()
     con.close()
     return obj
+
+def getCompanies(title):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT company FROM recruiters where company=='{0}'".format(title))
+    obj = obj.fetchall()
+    con.commit()
+    con.close()
+    return obj

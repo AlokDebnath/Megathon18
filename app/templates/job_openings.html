@@ -12,12 +12,18 @@
         <a href="{{ url_for('logout') }}">Logout</a>
 
         <form action="{{ url_for('search_jobs') }}" method="post">
-            <input type="text" placeholder="Search for jobs" id="search" name="search">
+            <input type="text" placeholder="Search for a job or company" id="search" name="search">
             <input type="submit" />
         </form>
 
+        <h4>Jobs</h4>
         {% for job in jobs %}
         <p>{{job[0]}}</p>
+        {% endfor %}
+
+        <h4>Companies</h4>
+        {% for company in companies %}
+        <p>{{company[0]}}</p>
         {% endfor %}
 
     </body>

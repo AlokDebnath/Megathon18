@@ -172,7 +172,8 @@ def search_jobs():
         if request.method == 'POST':
             title = request.form['search']
             jobs = dbHandler.getJobs(title)
-            return render_template('job_openings.html', jobs=jobs)
+            companies = dbHandler.getCompanies(title)
+            return render_template('job_openings.html', jobs=jobs, companies=companies)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
