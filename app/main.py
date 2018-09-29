@@ -7,6 +7,8 @@ from datetime import datetime
 from werkzeug import secure_filename
 import dbHandler
 import re, os
+import json
+import requests
 from hashlib import md5
 
 app = Flask(__name__)
@@ -17,10 +19,10 @@ def make_dir(upload_dir):
         os.makedirs(upload_dir)
 
 
-@app.after_request
-def after_request(response):
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    return response
+# @app.after_request
+# def after_request(response):
+#     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     return response
 
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
@@ -33,6 +35,9 @@ def index():
             jobopenings = dbHandler.getJobOpenings(username)
             return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
+            response = requests.get("http://api.open-notify.org/astros.json")
+            data = response.json()
+            print(data)
             resume = list_resume()
             return render_template('student_dashboard.html', username=username, resume=resume)
     return render_template('index.html')
@@ -137,7 +142,6 @@ def upload_resume():
             file = request.files['file']
             upload_dir = './resumes/'
             upload_dir = upload_dir + username
-            print upload_dir
             make_dir(upload_dir)
             filename = secure_filename(file.filename)
             file.save(os.path.join(upload_dir, filename))
