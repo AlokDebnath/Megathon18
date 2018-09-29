@@ -68,8 +68,7 @@ def allowLoginRecruiter(email, password):
 def getCompany(email):
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute(
-        "SELECT company FROM recruiters WHERE email=='{0}'".format(email))
+    obj = cur.execute("SELECT company FROM recruiters WHERE email=='{0}'".format(email))
     obj = obj.fetchone()
     con.commit()
     con.close()
@@ -88,8 +87,7 @@ def getCompanyID(email):
 def getCompanyEmail(id):
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute(
-        "SELECT email FROM recruiters WHERE id=='{0}'".format(id))
+    obj = cur.execute("SELECT email FROM recruiters WHERE id=='{0}'".format(id))
     obj = obj.fetchone()
     con.commit()
     con.close()
@@ -103,11 +101,18 @@ def createJobOpening(company_id, title):
     con.commit()
     con.close()
 
+def deleteJobOpening(id):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("DELETE FROM job_openings WHERE id=='{0}'".format(id))
+    con.commit()
+    con.close()
+
 def getJobOpenings(email):
     company_id = getCompanyID(email)
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute("SELECT title FROM job_openings WHERE company_id=='{0}'".format(company_id))
+    obj = cur.execute("SELECT title, id FROM job_openings WHERE company_id=='{0}'".format(company_id))
     obj = obj.fetchall()
     con.commit()
     con.close()

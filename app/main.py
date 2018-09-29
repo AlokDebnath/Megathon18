@@ -166,6 +166,14 @@ def create_job_opening():
             dbHandler.createJobOpening(company_id, title)
     return redirect(url_for('index'))
 
+@app.route('/delete_opening', methods = ['GET', 'POST'])
+def delete_job_opening():
+    if 'username' in session:
+        if request.method == 'POST':
+            id = request.args.get('id')
+            dbHandler.deleteJobOpening(id)
+    return redirect(url_for('index'))
+
 @app.route('/search', methods=['GET', 'POST'])
 def search_jobs():
     if 'username' in session:
