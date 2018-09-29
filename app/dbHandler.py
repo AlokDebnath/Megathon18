@@ -3,11 +3,11 @@ import datetime
 from hashlib import md5
 
 
-def insertStudent(username, password, email, year, college, age, name):
+def insertStudent(username, password, email, name):
     con = sql.connect("database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO students (name,age,college,year,username,password,email) VALUES (?,?,?,?,?,?,?)",
-                (name, age, college, year, username, password, email))
+    cur.execute("INSERT INTO students (name,username,password,email) VALUES (?,?,?,?)",
+                (name, username, password, email))
     con.commit()
     con.close() 
 

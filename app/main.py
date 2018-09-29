@@ -46,10 +46,7 @@ def student_register():
         password = request.form['password']
         email = request.form['email']
         name = request.form['name']
-        age = request.form['age']
-        college = request.form['college']
-        year = request.form['year']
-        dbHandler.insertStudent(username, password, email, year, college, age, name)
+        dbHandler.insertStudent(username, password, email, name)
         session['username'] = username
         return redirect(url_for('index'))
     else:
