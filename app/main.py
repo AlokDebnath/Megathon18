@@ -4,12 +4,18 @@ from flask import request, url_for, redirect, session, flash
 from datetime import date
 from datetime import time
 from datetime import datetime
+from werkzeug import secure_filename
 import dbHandler
-import re
+import re, os
 from hashlib import md5
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'e5ac358c-f0bf-11e5-9e39-d3b532c10a28'
+
+def make_dir(UPLOAD_DIRECTORY):
+    if not os.path.exists(UPLOAD_DIRECTORY):
+        os.makedirs(UPLOAD_DIRECTORY)
+
 
 @app.after_request
 def after_request(response):
@@ -111,6 +117,20 @@ def logout():
         session.pop('username', None)
     return redirect(url_for('index'))
 
+@app.route('/uploader', methods = ['GET', 'POST'])
+def upload_resume():
+    if 'username' in session:
+        username = session['username']
+        if request.method == 'POST':
+            file = request.files['file']
+            UPLOAD_DIRECTORY = './resumes/'
+            UPLOAD_DIRECTORY.join(username)
+            make_dir(UPLOAD_DIRECTORY)
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_DIRECTORY, filename))
+            return '', 201
+    else:
+        return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
