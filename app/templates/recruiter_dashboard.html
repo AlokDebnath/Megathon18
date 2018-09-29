@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+
+    <head>
+        <title>Recruiter Dashboard</title>
+    </head>
+
+    <body>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <h1>Company: {{ company }}</h1>
+
+        {% if recruiter %}
+        <form action="{{ url_for('search_candidate') }}" method="post">
+            <input type="text" placeholder="Search for a candidate" id="search" name="search">
+            <input type="submit" />
+        </form>
+        {% endif %}
+
+        {% if recruiter %}
+        <form action="{{ url_for('create_job_opening') }}" method="post">
+            <input type="text" name="title" id="title" placeholder="Job title" required/>
+            <button type="submit">Submit</button>
+        </form>
+        {% endif %}
+
+        {% for opening in jobopenings %}
+        <p>{{opening[0]}}</p>
+        {% if recruiter %}
+        <form action="{{ url_for('delete_job_opening', id=opening[1]) }}" method="post">
+            <button type="submit">Delete</button>
+        </form>
+        {% endif %}
+        {% endfor %}
+    </body>
+
+</html>
