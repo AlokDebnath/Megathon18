@@ -97,8 +97,16 @@ def getJobOpenings(email):
     company_id = getCompanyID(email)
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute(
-        "SELECT title FROM job_openings WHERE company_id=='{0}'".format(company_id))
+    obj = cur.execute("SELECT title FROM job_openings WHERE company_id=='{0}'".format(company_id))
+    obj = obj.fetchall()
+    con.commit()
+    con.close()
+    return obj
+
+def getJobs(title):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT company FROM recruiters where id==(SELECT company_id from job_openings WHERE title=='{0}')".format(title))
     obj = obj.fetchall()
     con.commit()
     con.close()

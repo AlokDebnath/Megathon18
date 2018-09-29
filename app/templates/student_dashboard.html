@@ -11,6 +11,11 @@
         <a href="{{ url_for('index') }}">Dashboard</a>
         <a href="{{ url_for('logout') }}">Logout</a>
 
+        <form action="{{ url_for('search_jobs') }}" method="post">
+            <input type="text" placeholder="Search for jobs" id="search" name="search">
+            <input type="submit" />
+        </form>
+
         <h1>Welcome <b>{{ username }}</b></h1>
 
         {%if resume%}
