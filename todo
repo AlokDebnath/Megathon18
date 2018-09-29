@@ -1,0 +1,23 @@
+
+
+- Parse resumes
+
+- Parse our own profile (that we create)
+
+- Parse job description
+
+- JSON input of profile into our system
+
+- Job Matching algorithm => Just resume vs resume + our own profile. ***If possible
+
+
+Web App Side:
+
+    - View Profile
+    - Edit Profile
+    - View Job board.
+    - Match job function
+
+    Startup Side:
+        - Post Job
+        - Find best candidate
