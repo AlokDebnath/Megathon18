@@ -27,9 +27,11 @@ def after_request(response):
 def index():
     if 'username' in session:
         username = session['username']
+        # If company
         if re.match( "^.*@.*$", username):
             company = dbHandler.getCompany(username)
-            return render_template('recruiter_dashboard.html', company=company[0])
+            jobopenings = dbHandler.getJobOpenings(username)
+            return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings)
         else:
             resume = list_resume()
             return render_template('student_dashboard.html', username=username, resume=resume)
@@ -139,9 +141,7 @@ def upload_resume():
             make_dir(upload_dir)
             filename = secure_filename(file.filename)
             file.save(os.path.join(upload_dir, filename))
-            return redirect(url_for('index'))
-    else:
-        return redirect(url_for('index'))
+    return redirect(url_for('index'))
 
 @app.route('/downloader', methods = ['GET', 'POST'])
 def download_resume():
@@ -154,6 +154,16 @@ def delete_resume():
     username = session['username']
     resume = list_resume()
     os.remove('./resumes/' + username + '/' + str(resume))
+    return redirect(url_for('index'))
+
+@app.route('/create_opening', methods = ['GET', 'POST'])
+def create_job_opening():
+    if 'username' in session:
+        if request.method == 'POST':
+            email = session['username']
+            title = request.form['title']
+            company_id = dbHandler.getCompanyID(email)
+            dbHandler.createJobOpening(company_id, title)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

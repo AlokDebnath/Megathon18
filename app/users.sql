@@ -9,7 +9,16 @@ drop table if exists students;
 
 drop table if exists recruiters;
     create table recruiters (
+        id integer primary key autoincrement,
         company text not null,
         email text not null unique,
         password text not null
+    );
+
+drop table if exists job_openings;
+    create table job_openings (
+        id integer primary key autoincrement,
+        company_id integer not null,
+        title text not null,
+        FOREIGN KEY("company_id") REFERENCES recruiters("id") ON DELETE CASCADE
     );
