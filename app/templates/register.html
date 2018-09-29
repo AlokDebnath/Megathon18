@@ -11,39 +11,40 @@
 
     <ul>
       <li><a href="{{ url_for('index') }}">HOME</a></li>
-      <li><a href="{{ url_for('register') }}">REGISTER</a></li>
       <li><a href="{{ url_for('login') }}">LOGIN</a></li>
     </ul>
 
     {%if notUniq%}
-    <div class="container">
-        <p>Invalid signup: Username already exists</p>
-    </div>
+    <p>Invalid signup: Username already exists</p>
     {%endif%}
 
     <h3>SIGN UP</h3>
       <p>Already have an account? Login <a href="{{ url_for('login') }}">here</a>
-        <form action="{{ url_for('register') }}" method="post">
+      
+      <form action="{{ url_for('student_register') }}" method="post">
+        <input type="text" name="username" id="username" maxlength="30" placeholder="Username" required/>
+        <input type="text" name="name" id="name" placeholder="Name" required/>
+        <input type="number" name="age" id="age" placeholder="Age" min="18" max="60" required/>
+        <input type="text" name="college" id="college" maxlength="30" placeholder="College" required/>
+        <input type="number" name="year" id="year" placeholder="Year" min="1" max="10" required/>
+        <input type="email"  name="email" id="email" maxlength="256" placeholder="Enter email" required/>
+        <input type="password" name="password" id="password" minlength="4" maxlength="20" placeholder="Password" required/>
+        <input type="password" name="password_confirm" id="password_confirm" placeholder="Re-enter password" required/>
+
+        <button type="submit">Submit</button>
+      </form>
+
+      <br><br>
+
+      <form action="{{ url_for('recruiter_register') }}" method="post">
           <input type="text" name="username" id="username" maxlength="30" placeholder="Username" required/>
-          <input type="text" name="name" id="name" placeholder="Name" required/>
-          <input type="number" name="age" id="age" placeholder="Age" min="18" max="60" required/>
-          <input type="text" name="college" id="college" maxlength="30" placeholder="College" required/>
-          <input type="number" name="year" id="year" placeholder="Year" min="1" max="10" required/>
+          <input type="text" name="company" id="company" placeholder="Company" required/>
           <input type="email"  name="email" id="email" maxlength="256" placeholder="Enter email" required/>
           <input type="password" name="password" id="password" minlength="4" maxlength="20" placeholder="Password" required/>
-          <input type="password" name="password_confirm" id="password_confirm" placeholder="Re-enter password" oninput="check(this)" required/>
-            <script language='javascript' type='text/javascript'>
-              function check(input) {
-              if (input.value != document.getElementById('password').value) {
-                input.setCustomValidity('Passwords do not match');
-              } else {
-                  input.setCustomValidity('');
-              }
-            }
-            </script>
-
+          <input type="password" name="password_confirm" id="password_confirm" placeholder="Re-enter password" required/>
+  
           <button type="submit">Submit</button>
-      </form>
+        </form>
 		
   </body>
 

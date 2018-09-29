@@ -11,8 +11,15 @@ def insertStudent(username, password, email, year, college, age, name):
     con.commit()
     con.close() 
 
+def insertRecruiter(username, company, password, email):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("INSERT INTO recruiters (username,company,password,email) VALUES (?,?,?,?)",
+                (username, company, password, email))
+    con.commit()
+    con.close()
 
-def uniq(username):
+def uniqstudent(username):
     con = sql.connect("database.db")
     cur = con.cursor()
     obj = cur.execute("SELECT * FROM students WHERE username='" + username + "'")
@@ -21,6 +28,14 @@ def uniq(username):
     else:
         return True
 
+def uniqrecruiter(username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT * FROM recruiters WHERE username='" + username + "'")
+    if obj.fetchone():
+        return False
+    else:
+        return True
 
 def allowLogin(username, password):
     con = sql.connect("database.db")

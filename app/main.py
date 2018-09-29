@@ -23,13 +23,20 @@ def index():
         return render_template('loggedinindex.html', username=username)
     return render_template('index.html')
 
-@app.route('/student_register', methods=['POST', 'GET'])
+@app.route('/register', methods=['POST', 'GET'])
 def register():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    else:
+        return render_template('register.html')
+
+@app.route('/student_register', methods=['POST', 'GET'])
+def student_register():
     if 'username' in session:
         return redirect(url_for('index'))
     if request.method == 'POST':
         username = request.form['username']
-        if not dbHandler.uniq(username):
+        if not dbHandler.uniqstudent(username):
             return render_template('register.html', notUniq="nonunique")
         password = request.form['password']
         email = request.form['email']
@@ -38,6 +45,23 @@ def register():
         college = request.form['college']
         year = request.form['year']
         dbHandler.insertStudent(username, password, email, year, college, age, name)
+        session['username'] = username
+        return redirect(url_for('index'))
+    else:
+        return render_template('register.html')
+
+@app.route('/recruiter_register', methods=['POST', 'GET'])
+def recruiter_register():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form['username']
+        if not dbHandler.uniqrecruiter(username):
+            return render_template('register.html', notUniq="nonunique")
+        password = request.form['password']
+        email = request.form['email']
+        company = request.form['company']
+        dbHandler.insertRecruiter(username, company, password, email)
         session['username'] = username
         return redirect(url_for('index'))
     else:
