@@ -146,10 +146,9 @@ def upload_resume():
             file.save(os.path.join(upload_dir, filename))
     return redirect(url_for('index'))
 
-@app.route('/downloader', methods = ['GET', 'POST'])
-def download_resume():
-    username = session['username']
-    resume = list_resume()
+@app.route('/downloader/<username>', methods = ['GET', 'POST'])
+def download_resume(username):
+    resume = list_resume(username)
     return send_from_directory('./resumes/' + username, resume, as_attachment=True)
 
 @app.route('/deleter', methods = ['GET', 'POST'])
@@ -194,7 +193,7 @@ def search_candidate():
             username = request.form['search']
             name = dbHandler.getUser(username)
             resume = list_resume(username)
-            return render_template('student_dashboard.html', student=False, username=username, name=name[0])
+            return render_template('student_dashboard.html', student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])
