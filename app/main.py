@@ -37,7 +37,8 @@ def index():
         else:
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
-            return render_template('student_dashboard.html', username=username, resume=resume, student=True, studentdata=studentdata)
+            companies = dbHandler.getAllCompanies()
+            return render_template('student_dashboard.html', companies=companies, username=username, resume=resume, student=True, studentdata=studentdata)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])

@@ -167,3 +167,12 @@ def getStudentData(username):
     con.commit()
     con.close()
     return obj
+
+def getAllCompanies():
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT company, title, recruiters.id FROM recruiters INNER JOIN job_openings ON recruiters.id = job_openings.company_id")
+    obj = obj.fetchall()
+    con.commit()
+    con.close()
+    return obj
