@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, send_from_directory
 from flask import request, url_for, redirect, session, flash
 from datetime import date
 from datetime import time
@@ -142,6 +142,12 @@ def upload_resume():
             return redirect(url_for('index'))
     else:
         return redirect(url_for('index'))
+
+@app.route('/downloader', methods = ['GET', 'POST'])
+def download_resume():
+    username = session['username']
+    resume = list_resume()
+    return send_from_directory('./resumes/' + username, resume, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
