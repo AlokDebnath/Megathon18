@@ -12,7 +12,6 @@ drop table if exists students;
 
 drop table if exists recruiters;
     create table recruiters (
-        username text not null unique,
         company text not null,
         email text not null unique,
         password text not null

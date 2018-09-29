@@ -5,6 +5,7 @@ from datetime import date
 from datetime import time
 from datetime import datetime
 import dbHandler
+import re
 from hashlib import md5
 
 app = Flask(__name__)
@@ -20,7 +21,10 @@ def after_request(response):
 def index():
     if 'username' in session:
         username = session['username']
-        return render_template('loggedinindex.html', username=username)
+        if re.match( "^.*@.*$", username):
+            return render_template('recruiter_dashboard.html', username=username)
+        else:
+            return render_template('student_dashboard.html', username=username)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -55,14 +59,13 @@ def recruiter_register():
     if 'username' in session:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form['username']
-        if not dbHandler.uniqrecruiter(username):
+        email = request.form['email']
+        if not dbHandler.uniqrecruiter(email):
             return render_template('register.html', notUniq="nonunique")
         password = request.form['password']
-        email = request.form['email']
         company = request.form['company']
-        dbHandler.insertRecruiter(username, company, password, email)
-        session['username'] = username
+        dbHandler.insertRecruiter(company, password, email)
+        session['username'] = email
         return redirect(url_for('index'))
     else:
         return render_template('register.html')
@@ -94,10 +97,10 @@ def recruiter_login():
     if 'username' in session:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        if dbHandler.allowLoginRecruiter(username, password):
-            session['username'] = username
+        if dbHandler.allowLoginRecruiter(email, password):
+            session['username'] = email
             return redirect(url_for('index'))
         else:
             return render_template('login.html', failedLogin="failed")
