@@ -225,12 +225,29 @@ def add_codeforces_link():
 
 def getGithubDetails(github_handle):
     stars = 0
+    languages = []
     response = requests.get("https://api.github.com/users/" + github_handle + "/repos")
     data = response.json()
     for repo in data:
         stars = stars + repo['stargazers_count']
+        if repo['language']:
+            if repo['language'] not in languages:
+                languages.append(repo['language'])
     print(stars)
+    print(languages)
+
+def getCodeforcesDetails(codeforces_handle):
+    rating = 0
+    rank = "unavailable"
+    response = requests.get("https://codeforces.com/api/user.info?handles=" + codeforces_handle)
+    data = response.json()
+    for user in data['result']:
+        rating = user['rating']
+        rank = user['rank']
+    print(rating)
+    print(rank)
+
 
 if __name__ == '__main__':
-    getGithubDetails("dheerajpreddy")
+    getCodeforcesDetails('altitude')
     app.run(debug=True)
