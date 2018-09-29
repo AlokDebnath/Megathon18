@@ -59,6 +59,9 @@ def student_register():
         email = request.form['email']
         name = request.form['name']
         dbHandler.insertStudent(username, password, email, name)
+        upload_dir = './resumes/'
+        upload_dir = upload_dir + username
+        make_dir(upload_dir)
         session['username'] = username
         return redirect(url_for('index'))
     else:
@@ -139,7 +142,6 @@ def upload_resume():
             file = request.files['file']
             upload_dir = './resumes/'
             upload_dir = upload_dir + username
-            make_dir(upload_dir)
             filename = secure_filename(file.filename)
             file.save(os.path.join(upload_dir, filename))
     return redirect(url_for('index'))
@@ -152,7 +154,7 @@ def download_resume(username):
 @app.route('/deleter', methods = ['GET', 'POST'])
 def delete_resume():
     username = session['username']
-    resume = list_resume()
+    resume = list_resume(username)
     os.remove('./resumes/' + username + '/' + str(resume))
     return redirect(url_for('index'))
 
@@ -249,5 +251,4 @@ def getCodeforcesDetails(codeforces_handle):
 
 
 if __name__ == '__main__':
-    getCodeforcesDetails('altitude')
     app.run(debug=True)
