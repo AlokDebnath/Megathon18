@@ -23,8 +23,8 @@
         {% endif %}
 
         {% if not student%}
-        <h3>{{name}}</h3>
-        <h3>{{username}}</h3>
+        <h3>Name: {{name}}</h3>
+        <h3>Username: {{username}}</h3>
         {% endif %}
 
         {%if resume%}
@@ -44,6 +44,30 @@
             </form>
             {%endif%}
         {%endif%}
+
+        {%if studentdata[4]%}
+        <p>Github Handle: {{studentdata[4]}}</p>
+        {%else%}
+            {%if student%}
+            <form action = "{{ url_for('add_github_link') }}" method = "POST">
+                <p>Add github handle:</p>
+                <input type="text" name="github" id="github" />
+                <input type = "submit"/>
+            </form>
+            {% endif %}
+        {% endif %}
+
+        {%if studentdata[5]%}
+        <p>Codeforces Handle: {{studentdata[5]}}</p>
+        {%else%}
+            {%if student%}
+            <form action = "{{ url_for('add_codeforces_link') }}" method = "POST">
+                <p>Add codeforces handle:</p>
+                <input type="text" name="codeforces" id="codeforces" />
+                <input type = "submit"/>
+            </form>
+            {% endif %}
+        {% endif %}
 
     </body>
 

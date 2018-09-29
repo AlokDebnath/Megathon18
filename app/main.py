@@ -35,11 +35,9 @@ def index():
             jobopenings = dbHandler.getJobOpenings(username)
             return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
-            response = requests.get("http://api.open-notify.org/astros.json")
-            data = response.json()
-            print(data)
             resume = list_resume(username)
-            return render_template('student_dashboard.html', username=username, resume=resume, student=True)
+            studentdata = dbHandler.getStudentData(username)
+            return render_template('student_dashboard.html', username=username, resume=resume, student=True, studentdata=studentdata)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -193,7 +191,8 @@ def search_candidate():
             username = request.form['search']
             name = dbHandler.getUser(username)
             resume = list_resume(username)
-            return render_template('student_dashboard.html', student=False, username=username, name=name[0], resume=resume)
+            studentdata = dbHandler.getStudentData(username)
+            return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])
@@ -206,5 +205,32 @@ def viewCompany():
         return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=False)
     return redirect(url_for('index'))
 
+@app.route('/github', methods=['GET', 'POST'])
+def add_github_link():
+    if 'username' in session:
+        if request.method == 'POST':
+            username = session['username']
+            link = request.form['github']
+            dbHandler.addGithubLink(link, username)
+    return redirect(url_for('index'))
+
+@app.route('/codeforces', methods=['GET', 'POST'])
+def add_codeforces_link():
+    if 'username' in session:
+        if request.method == 'POST':
+            username = session['username']
+            link = request.form['codeforces']
+            dbHandler.addCodeforcesLink(link, username)
+    return redirect(url_for('index'))
+
+def getGithubDetails(github_handle):
+    stars = 0
+    response = requests.get("https://api.github.com/users/" + github_handle + "/repos")
+    data = response.json()
+    for repo in data:
+        stars = stars + repo['stargazers_count']
+    print(stars)
+
 if __name__ == '__main__':
+    getGithubDetails("dheerajpreddy")
     app.run(debug=True)

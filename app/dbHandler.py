@@ -144,3 +144,26 @@ def getUser(username):
     con.commit()
     con.close()
     return obj
+
+def addGithubLink(link, username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("UPDATE students SET github='" + link + "' WHERE username='" + username + "'")
+    con.commit()
+    con.close()
+
+def addCodeforcesLink(link, username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("UPDATE students SET codeforces='" + link + "' WHERE username='" + username + "'")
+    con.commit()
+    con.close()
+
+def getStudentData(username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT * FROM students WHERE username='" + username + "'")
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj
