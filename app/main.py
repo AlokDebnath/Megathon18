@@ -22,7 +22,8 @@ def index():
     if 'username' in session:
         username = session['username']
         if re.match( "^.*@.*$", username):
-            return render_template('recruiter_dashboard.html', username=username)
+            company = dbHandler.getCompany(username)
+            return render_template('recruiter_dashboard.html', company=company[0])
         else:
             return render_template('student_dashboard.html', username=username)
     return render_template('index.html')

@@ -64,3 +64,13 @@ def allowLoginRecruiter(email, password):
         con.commit()
         con.close()
         return False
+
+def getCompany(email):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute(
+        "SELECT company FROM recruiters WHERE email=='{0}'".format(email))
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj
