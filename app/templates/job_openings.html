@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+
+    <head>
+        <title>Job openings</title>
+    </head>
+
+    <body>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <form action="{{ url_for('search_jobs') }}" method="post">
+            <input type="text" placeholder="Search for a job or company" id="search" name="search">
+            <input type="submit" />
+        </form>
+
+        <h4>Jobs</h4>
+        {% for job in jobs %}
+        <a href="{{ url_for('viewCompany', company_id=job[1]) }}">{{job[0]}}</a>
+        {% endfor %}
+
+        <h4>Companies</h4>
+        {% for company in companies %}
+        <a href="{{ url_for('viewCompany', company_id=company[1]) }}">{{company[0]}}</a>
+        {% endfor %}
+
+    </body>
+
+</html>
