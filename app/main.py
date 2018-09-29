@@ -38,8 +38,8 @@ def index():
             response = requests.get("http://api.open-notify.org/astros.json")
             data = response.json()
             print(data)
-            resume = list_resume()
-            return render_template('student_dashboard.html', username=username, resume=resume)
+            resume = list_resume(username)
+            return render_template('student_dashboard.html', username=username, resume=resume, student=True)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -125,8 +125,7 @@ def logout():
         session.pop('username', None)
     return redirect(url_for('index'))
 
-def list_resume():
-    username = session['username']
+def list_resume(username):
     path = './resumes/' + username
     onlyfiles = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
     if len(onlyfiles) == 0:
@@ -186,6 +185,16 @@ def search_jobs():
             jobs = dbHandler.getJobs(title)
             companies = dbHandler.getCompanies(title)
             return render_template('job_openings.html', jobs=jobs, companies=companies)
+    return redirect(url_for('index'))
+
+@app.route('/user_search', methods=['GET', 'POST'])
+def search_candidate():
+    if 'username' in session:
+        if request.method == 'POST':
+            username = request.form['search']
+            name = dbHandler.getUser(username)
+            resume = list_resume(username)
+            return render_template('student_dashboard.html', student=False, username=username, name=name[0])
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])

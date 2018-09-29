@@ -135,3 +135,12 @@ def getCompanies(title):
     con.commit()
     con.close()
     return obj
+
+def getUser(username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT name FROM students WHERE username=='{0}'".format(username))
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj

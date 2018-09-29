@@ -11,22 +11,37 @@
         <a href="{{ url_for('index') }}">Dashboard</a>
         <a href="{{ url_for('logout') }}">Logout</a>
 
+        {% if student %}
         <form action="{{ url_for('search_jobs') }}" method="post">
             <input type="text" placeholder="Search for a job or company" id="search" name="search">
             <input type="submit" />
         </form>
+        {% endif %}
 
+        {% if student %}
         <h1>Welcome <b>{{ username }}</b></h1>
+        {% endif %}
+
+        {% if not student%}
+        <h3>{{name}}</h3>
+        {% endif %}
 
         {%if resume%}
         <p>Resume</p>
         <form action = "{{ url_for('download_resume') }}"><button type="submit">{{resume}}</button></form>
-        <form action = "{{ url_for('delete_resume') }}"><button type="submit">Delete</button></form>
+            {% if student %}
+            <form action = "{{ url_for('delete_resume') }}"><button type="submit">Delete</button></form>
+            {%endif%}
         {%else%}
-        <form action = "{{ url_for('upload_resume') }}" method = "POST" enctype = "multipart/form-data">
-            <input type = "file" name = "file" />
-            <input type = "submit"/>
-        </form>
+            {% if not student %}
+            <p>The user has not uploaded any resume</p>
+            {% endif %}
+            {% if student %}
+            <form action = "{{ url_for('upload_resume') }}" method = "POST" enctype = "multipart/form-data">
+                <input type = "file" name = "file" />
+                <input type = "submit"/>
+            </form>
+            {%endif%}
         {%endif%}
 
     </body>
