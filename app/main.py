@@ -31,7 +31,7 @@ def index():
         if re.match( "^.*@.*$", username):
             company = dbHandler.getCompany(username)
             jobopenings = dbHandler.getJobOpenings(username)
-            return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings)
+            return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
             resume = list_resume()
             return render_template('student_dashboard.html', username=username, resume=resume)
@@ -174,6 +174,16 @@ def search_jobs():
             jobs = dbHandler.getJobs(title)
             companies = dbHandler.getCompanies(title)
             return render_template('job_openings.html', jobs=jobs, companies=companies)
+    return redirect(url_for('index'))
+
+@app.route('/company', methods=['GET', 'POST'])
+def viewCompany():
+    company_id = request.args.get('company_id')
+    if 'username' in session:
+        email = dbHandler.getCompanyEmail(company_id)
+        company = dbHandler.getCompany(email)
+        jobopenings = dbHandler.getJobOpenings(email)
+        return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=False)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

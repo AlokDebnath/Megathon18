@@ -13,10 +13,12 @@
 
         <h1>Company: {{ company }}</h1>
 
+        {% if recruiter %}
         <form action="{{ url_for('create_job_opening') }}" method="post">
             <input type="text" name="title" id="title" placeholder="Job title" required/>
             <button type="submit">Submit</button>
         </form>
+        {% endif %}
 
         {% for opening in jobopenings %}
         <p>{{opening[0]}}</p>

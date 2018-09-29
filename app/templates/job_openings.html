@@ -23,7 +23,7 @@
 
         <h4>Companies</h4>
         {% for company in companies %}
-        <p>{{company[0]}}</p>
+        <a href="{{ url_for('viewCompany', company_id=company[1]) }}">{{company[0]}}</p>
         {% endfor %}
 
     </body>

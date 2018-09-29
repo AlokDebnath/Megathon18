@@ -85,6 +85,16 @@ def getCompanyID(email):
     con.close()
     return obj[0]
 
+def getCompanyEmail(id):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute(
+        "SELECT email FROM recruiters WHERE id=='{0}'".format(id))
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj[0]
+
 def createJobOpening(company_id, title):
     con = sql.connect("database.db")
     cur = con.cursor()
@@ -115,7 +125,7 @@ def getJobs(title):
 def getCompanies(title):
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute("SELECT company FROM recruiters where company=='{0}'".format(title))
+    obj = cur.execute("SELECT company, id FROM recruiters where company=='{0}'".format(title))
     obj = obj.fetchall()
     con.commit()
     con.close()

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+
+    <head>
+        <title>{{company}}</title>
+    </head>
+
+    <body>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <h2>{{company}}</h2>
+
+        {% for opening in jobopenings %}
+        <p>{{opening[0]}}</p>
+        {% endfor %}
+
+    </body>
+
+</html>
