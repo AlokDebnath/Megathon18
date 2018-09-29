@@ -12,9 +12,9 @@ from hashlib import md5
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'e5ac358c-f0bf-11e5-9e39-d3b532c10a28'
 
-def make_dir(UPLOAD_DIRECTORY):
-    if not os.path.exists(UPLOAD_DIRECTORY):
-        os.makedirs(UPLOAD_DIRECTORY)
+def make_dir(upload_dir):
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
 
 
 @app.after_request
@@ -123,12 +123,13 @@ def upload_resume():
         username = session['username']
         if request.method == 'POST':
             file = request.files['file']
-            UPLOAD_DIRECTORY = './resumes/'
-            UPLOAD_DIRECTORY.join(username)
-            make_dir(UPLOAD_DIRECTORY)
+            upload_dir = './resumes/'
+            upload_dir = upload_dir + username
+            print upload_dir
+            make_dir(upload_dir)
             filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_DIRECTORY, filename))
-            return '', 201
+            file.save(os.path.join(upload_dir, filename))
+            return '<p>File uploaded successfully</p><a href="/">Back</a>'
     else:
         return redirect(url_for('index'))
 
