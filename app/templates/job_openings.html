@@ -18,12 +18,12 @@
 
         <h4>Jobs</h4>
         {% for job in jobs %}
-        <p>{{job[0]}}</p>
+        <a href="{{ url_for('viewCompany', company_id=job[1]) }}">{{job[0]}}</a>
         {% endfor %}
 
         <h4>Companies</h4>
         {% for company in companies %}
-        <a href="{{ url_for('viewCompany', company_id=company[1]) }}">{{company[0]}}</p>
+        <a href="{{ url_for('viewCompany', company_id=company[1]) }}">{{company[0]}}</a>
         {% endfor %}
 
     </body>
