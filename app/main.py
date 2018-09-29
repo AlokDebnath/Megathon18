@@ -33,7 +33,8 @@ def index():
         if re.match( "^.*@.*$", username):
             company = dbHandler.getCompany(username)
             jobopenings = dbHandler.getJobOpenings(username)
-            return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
+            students = dbHandler.getAllStudents()
+            return render_template('recruiter_dashboard.html', students=students, company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
@@ -196,6 +197,11 @@ def search_candidate():
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
             return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
+        username = request.args.get('student')
+        name = dbHandler.getUser(username)
+        resume = list_resume(username)
+        studentdata = dbHandler.getStudentData(username)  
+        return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])

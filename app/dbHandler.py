@@ -176,3 +176,12 @@ def getAllCompanies():
     con.commit()
     con.close()
     return obj
+
+def getAllStudents():
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT username from students")
+    obj = obj.fetchall()
+    con.commit()
+    con.close()
+    return obj
