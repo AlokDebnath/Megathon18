@@ -149,5 +149,12 @@ def download_resume():
     resume = list_resume()
     return send_from_directory('./resumes/' + username, resume, as_attachment=True)
 
+@app.route('/deleter', methods = ['GET', 'POST'])
+def delete_resume():
+    username = session['username']
+    resume = list_resume()
+    os.remove('./resumes/' + username + '/' + str(resume))
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(debug=True)
