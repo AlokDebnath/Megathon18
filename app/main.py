@@ -10,9 +10,171 @@ import re, os
 import json
 import requests
 from hashlib import md5
+import textract
+import nltk
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import sessionmaker
+import sqlite3 as sql
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'e5ac358c-f0bf-11e5-9e39-d3b532c10a28'
+
+#### From processing.py ####
+
+
+
+def noun_finder(tokenized_words):
+    # NN is more generic, NNP is more specific. Check which one yields better performance
+    l1 = ['>', '<', 'nbsp']
+    tokenized_words = [x for x in tokenized_words if x not in l1 and len(x) > 2 and x[0] != '/']
+    is_noun = lambda pos: pos[:3] == 'NNP'
+    #is_noun = lambda pos: pos[:2] == 'NN'
+    nouns = [word for (word, pos) in nltk.pos_tag(tokenized_words) if is_noun(pos)]
+    return nouns
+
+# For Data input, need to tokenize it then run noun finder
+
+
+def score_2_list(nounlist1, nounlist2):
+    score = 0
+    nounhash = {}
+    for noun in nounlist1:
+        if noun not in nounhash.keys():
+            nounhash[noun] = 1
+        else:
+            nounhash[noun] += 1
+    for noun in nounlist2:
+        if noun not in nounhash.keys():
+            nounhash[noun] = 1
+        else:
+            nounhash[noun] += 1
+    for i in nounhash.keys():
+        if nounhash[i] > 1:
+            score += 1
+    return score
+
+def score_3_list(nounlist1, nounlist2, nounlist3):
+    for noun in nounlist1:
+        if noun not in nounhash.keys():
+            nounhash[noun] = 1
+        else:
+            nounhash[noun] += 1
+    for noun in nounlist2:
+        if noun not in nounhash.keys():
+            nounhash[noun] = 1
+        else:
+            nounhash[noun] += 1
+    for noun in nounlist3:
+        if noun not in nounhash.keys():
+            nounhash[noun] = 1
+        else:
+            nounhash[noun] += 1
+    for i in nounhash.keys():
+        if nounhash[i] == 2:
+            score += 1
+        if nounhash[i] == 3:
+            score += 10
+    return score
+
+def getJobDesc():
+    job_desclist = []
+    lst = getJobDescdb()
+    for i in lst:
+        job_desclist.append([i[1], i[0]])
+    return job_desclist
+
+
+def getJobDescdb():
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT id, job_description FROM job_openings")
+    obj = obj.fetchall()
+    con.commit()
+    con.close()
+    return obj
+
+
+
+def read_job_desc():
+    joblist = getJobDesc()
+    titlemap = []
+    # joblist is a list of lists where the nested list is [job_description, job_title]
+    counter = 0
+    for job in joblist:
+        counter += 1
+        titlemap.append([job[1], noun_finder(nltk.word_tokenize(job[0]))]) # job[0] is always the description
+        if counter == 100:
+            break
+    print(titlemap)
+    return titlemap
+
+
+def get_resumes(n, path):
+        all_cvs = list()
+        for index, folder in enumerate(os.listdir(path)):
+            for index2, file in enumerate(os.listdir(path + folder)):
+                if (file[-3:]) in ['pdf', 'docx']:
+                        text = textract.process("./resumes/" + folder + "/" + file)
+                        cleaned_cv = (str(text)).replace('\\n', '\n')
+                        regex = re.compile('^x..$')
+                        cleaned_cv = list(filter(lambda x: not regex.search(x), re.findall("[A-Z]{2,}(?![a-z])|[\w]+", cleaned_cv)))
+                        all_cvs.append((file, cleaned_cv))
+                else:
+                    continue
+                if index >= 1000:
+                    break
+        # print(all_cvs[n])
+        return all_cvs
+
+# Given one job description, clean and create nounlist
+def input_job_desc(description):
+    scorelist = {}
+    nounlist1 = noun_finder(nltk.word_tokenize(description))
+    all_resumes = get_resumes(1000, './resumes/')
+    count = 0
+    for resume in all_resumes:
+        nounlist2 = noun_finder(resume[1])
+        score = score_2_list(nounlist1, nounlist2)
+        scorelist[resume[0]] = score
+        count += 1
+        print(count)
+
+    return scorelist
+
+def input_stud_desc(resumefile):
+    text = textract.process(resumefile)
+    cleaned_cv = (str(text)).replace('\\n', '\n')
+    regex = re.compile('^x..$')
+    cleaned_cv = list(filter(lambda x: not regex.search(x), re.findall("[A-Z]{2,}(?![a-z])|[\w]+", cleaned_cv)))
+    nounlist1 = noun_finder(cleaned_cv)
+    print(nounlist1)
+    scorelist = {}
+    count = 0
+    # All job descriptions
+    jobs_descs = read_job_desc()
+    for desc in jobs_descs:
+        nounlist2 = desc[1]
+        print(nounlist2)
+        score = score_2_list(nounlist1, nounlist2)
+        scorelist[desc[0]] = score
+        count += 1
+        print(count)
+    return scorelist
+
+
+
+
+#### End processing.py ####
+
+
+
+
+
+
+
+
 
 def make_dir(upload_dir):
     if not os.path.exists(upload_dir):
@@ -189,6 +351,18 @@ def search_jobs():
             return render_template('job_openings.html', jobs=jobs, companies=companies)
     return redirect(url_for('index'))
 
+
+@app.route('/processed_search', methods = ['GET', 'POST'])
+def processed_search():
+    if 'username' in session:
+        username = session['username']
+        if not list_resume(username):
+            return "Please Input a Resume"
+        resumename = list_resume(username)
+        filepath = "./resumes/" + username + "/" + resumename
+        scorelist = input_stud_desc(filepath)
+        return str(scorelist)
+
 @app.route('/user_search', methods=['GET', 'POST'])
 def search_candidate():
     if 'username' in session:
@@ -204,7 +378,7 @@ def search_candidate():
         username = request.args.get('student')
         name = dbHandler.getUser(username)
         resume = list_resume(username)
-        studentdata = dbHandler.getStudentData(username)  
+        studentdata = dbHandler.getStudentData(username)
         return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
