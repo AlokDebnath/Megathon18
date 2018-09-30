@@ -1,3 +1,4 @@
+import os
 from jobdb import *
 import nltk
 from sqlalchemy import create_engine
@@ -109,5 +110,39 @@ def read_job_desc():
             break
     return titlemap 
 
+
+def get_resumes(n, path):
+        all_cvs = list()
+        for index, file in enumerate(os.listdir(path)):
+                if (file[-3:]) in ['pdf', 'docx']:
+                        text = textract.process("./resumes/" + file)
+                        cleaned_cv = (str(text)).replace('\\n', '\n')
+                        regex = re.compile('^x..$')
+                        cleaned_cv = list(filter(lambda x: not regex.search(x), re.findall("[A-Z]{2,}(?![a-z])|[\w]+", cleaned_cv)))
+                        all_cvs.append((file, cleaned_cv))
+                else:
+                    continue
+                if index >= 1000:
+                    break
+        # print(all_cvs[n])
+        return all_cvs
+
+# Given one job description, clean and create nounlist
+def input_job_desc(description):
+    nounlist1 = noun_finder(nltk.word_tokenize(description))
+    all_resumes = get_resumes(1000, './resumes')
+    count = 0
+    for resume in all_resumes:
+        nounlist2 = noun_finder(nltk.word_tokenize(resume[1]))
+        score = score_2_list(nounlist1, nounlist2)
+        scorelist[resume[0]] = score
+        count += 1
+        print(count)
+
+    return scorelist
+
+
+
+
 if __name__ == '__main__':
-    a = read_job_desc()
+    print(input_job_desc("I want a Software Engineer"))
