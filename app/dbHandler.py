@@ -127,6 +127,15 @@ def getJobs(title):
     con.close()
     return obj
 
+def getJob(id):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT company, title, job_description FROM job_openings INNER JOIN recruiters ON recruiters.id = job_openings.company_id")
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj
+
 def getCompanies(title):
     con = sql.connect("database.db")
     cur = con.cursor()
@@ -171,7 +180,7 @@ def getStudentData(username):
 def getAllCompanies():
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute("SELECT company, title, recruiters.id FROM recruiters INNER JOIN job_openings ON recruiters.id = job_openings.company_id")
+    obj = cur.execute("SELECT company, title, recruiters.id, job_openings.id FROM recruiters INNER JOIN job_openings ON recruiters.id = job_openings.company_id")
     obj = obj.fetchall()
     con.commit()
     con.close()

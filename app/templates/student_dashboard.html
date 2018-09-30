@@ -36,7 +36,7 @@
             {% for company in companies %}
             <tr>
                 <td><a href="{{ url_for('viewCompany', company_id=company[2]) }}">{{company[0]}}</a></td>
-                <td>{{company[1]}}</td>
+                <td><a href="{{ url_for('viewJob', job_id=company[3]) }}">{{company[1]}}</a></td>
             </tr>
             {% endfor %}
 

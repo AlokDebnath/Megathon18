@@ -218,6 +218,14 @@ def viewCompany():
         return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=False)
     return redirect(url_for('index'))
 
+@app.route('/job', methods=['GET', 'POST'])
+def viewJob():
+    job_id = request.args.get('job_id')
+    if 'username' in session:
+        jobopening = dbHandler.getJob(job_id)
+        return render_template('view_job.html', jobopening=jobopening)
+    return redirect(url_for('index'))
+
 @app.route('/github', methods=['GET', 'POST'])
 def add_github_link():
     if 'username' in session:
