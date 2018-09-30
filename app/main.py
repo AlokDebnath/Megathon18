@@ -120,7 +120,7 @@ def get_resumes(n, path):
                         cleaned_cv = (str(text)).replace('\\n', '\n')
                         regex = re.compile('^x..$')
                         cleaned_cv = list(filter(lambda x: not regex.search(x), re.findall("[A-Z]{2,}(?![a-z])|[\w]+", cleaned_cv)))
-                        all_cvs.append((file, cleaned_cv))
+                        all_cvs.append((folder, cleaned_cv))
                 else:
                     continue
                 if index >= 1000:
@@ -362,6 +362,16 @@ def processed_search():
         filepath = "./resumes/" + username + "/" + resumename
         scorelist = input_stud_desc(filepath)
         return str(scorelist)
+
+@app.route('/processed_search_candidate', methods = ['GET', 'POST'])
+def processed_search_candidate():
+    if 'username' in session:
+        company_email = session['username']
+        id = request.args.get('id')
+        description = dbHandler.getJobDescription(id)
+        scorelist = input_job_desc(description[0])
+        return str(scorelist)
+
 
 @app.route('/user_search', methods=['GET', 'POST'])
 def search_candidate():

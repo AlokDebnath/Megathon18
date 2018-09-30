@@ -137,6 +137,15 @@ def getJob(id):
     con.close()
     return obj
 
+def getJobDescription(id):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute("SELECT job_description FROM job_openings where id=='{0}'".format(id))
+    obj = obj.fetchone()
+    con.commit()
+    con.close()
+    return obj
+
 def getCompanies(title):
     con = sql.connect("database.db")
     cur = con.cursor()

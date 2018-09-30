@@ -49,6 +49,9 @@
         <form action="{{ url_for('delete_job_opening', id=opening[1]) }}" method="post">
             <button type="submit">Delete</button>
         </form>
+        <form action="{{ url_for('processed_search_candidate', id=opening[1]) }}" method="post">
+            <button type="submit">Find Candidates</button>
+        </form>
         {% endif %}
         {% endfor %}
     </body>
