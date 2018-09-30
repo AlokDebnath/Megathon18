@@ -1,49 +1,130 @@
-<!DOCTYPE HTML>
 
+<!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <title>Dashboard</title>
-    </head>
+  <head>
 
-    <body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <a href="{{ url_for('index') }}">Dashboard</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+    <title>Projects4U</title>
 
-        {% if student %}
-        <form action="{{ url_for('search_jobs') }}" method="post">
-            <input type="text" placeholder="Search for a job or company" id="search" name="search">
-            <input type="submit" />
-        </form>
-        {% endif %}
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"> 
 
-        {% if student %}
-        <h1>Welcome <b>{{ username }}</b></h1>
-        {% endif %}
+    <!-- Custom fonts for this template -->
+    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
-        {% if not student%}
-        <h3>Name: {{name}}</h3>
-        <h3>Username: {{username}}</h3>
-        {% endif %}
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/agency.min.css') }}">
 
-        {% if student %}
-        <table>
-            <tr>
-                <th>Company name</th>
-                <th>Job offers</th>
-            </tr>
-            {% for company in companies %}
-            <tr>
-                <td><a href="{{ url_for('viewCompany', company_id=company[2]) }}">{{company[0]}}</a></td>
-                <td><a href="{{ url_for('viewJob', job_id=company[3]) }}">{{company[1]}}</a></td>
-            </tr>
-            {% endfor %}
+  </head>
+ 
+  <body id="page-top">
 
-        </table>
-        {%endif%}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Projects4U</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav text-uppercase ml-auto">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#services">Openings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#portfolio">Resume</a>
+            </li>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#contact">Other Information</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="{{ url_for('index') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-        {%if resume%}
+    <!-- Header -->
+    
+    <header class="masthead">
+      <div class="container">
+        <div class="intro-text">
+          <div class="intro-lead-in">Welcome to Projects4U!</div>
+          {% if student %}
+          <div class="intro-heading text-uppercase">Hi, {{ username }}</div>
+          {% endif %}
+
+          {% if not student%}
+          <div class="intro-heading text-uppercase">Hi, {{ name }} aka {{ username }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+
+    <!-- Services -->
+    <section id="services">
+      <div class="container">
+        <div class="row">
+            {% if student %}
+          <div class="col-lg-12 text-center">
+            <h2 class="section-heading text-uppercase">Jobs and Projects</h2>
+            <h3 class="section-subheading text-muted">What can you apply for?</h3>
+          </div>
+        </div>
+        <div class="row text-center">
+          <div class="col-md-6">
+            <form class="form-horizontal" action="{{ url_for('search_jobs') }}" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="search" id="search" placeholder="Search for a job or company"/>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+          </div>
+          <div class="col-md-6">
+            <span class="fa-stack fa-4x">
+              <i class="fas fa-circle fa-stack-2x text-primary"></i>
+              <i class="fas fa-laptop fa-stack-1x fa-inverse"></i>
+            </span>
+            <h4 class="service-heading">Table of Jobs</h4>
+            <table class="table table-striped">
+                <thead>
+                        <tr>
+                            <th>Company name</th>
+                            <th>Job offers</th>
+                        </tr>
+                </thead>
+                <tbody>
+                        {% for company in companies %}
+                        <tr>
+                            <td><a href="{{ url_for('viewCompany', company_id=company[2]) }}">{{company[0]}}</a></td>
+                            <td><a href="{{ url_for('viewJob', job_id=company[3]) }}">{{company[1]}}</a></td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    {%if resume%}
         <p>Resume</p>
         <form action = "{{ url_for('download_resume', username=username) }}"><button type="submit">{{resume}}</button></form>
             {% if student %}
@@ -61,30 +142,365 @@
             {%endif%}
         {%endif%}
 
-        {%if studentdata[4]%}
-        <p>Github Handle: {{studentdata[4]}}</p>
-        {%else%}
-            {%if student%}
-            <form action = "{{ url_for('add_github_link') }}" method = "POST">
-                <p>Add github handle:</p>
-                <input type="text" name="github" id="github" />
-                <input type = "submit"/>
-            </form>
-            {% endif %}
-        {% endif %}
 
-        {%if studentdata[5]%}
-        <p>Codeforces Handle: {{studentdata[5]}}</p>
-        {%else%}
-            {%if student%}
-            <form action = "{{ url_for('add_codeforces_link') }}" method = "POST">
-                <p>Add codeforces handle:</p>
-                <input type="text" name="codeforces" id="codeforces" />
-                <input type = "submit"/>
-            </form>
+    <!-- Portfolio -->
+    <section id="portfolio">
+        <div class="container">
+          <div class="row">
+            {% if resume %}
+            <div class="col-lg-12 text-center">
+              <h2 class="section-heading text-uppercase">Your Resume</h2>
+              <h3 class="section-subheading text-muted">Find the credentials</h3>
+            </div>
+            </div>
+            <div class="row text-center">
+                <form class="form-horizontal" action="{{ url_for('download_resume', username=username) }}">
+                  <div class="form-group">
+                        <button type="submit">
+                            {{resume}}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+                {% if not student %}
+                <div class="col-lg-12 text-center">
+                        <h2 class="section-heading text-uppercase">No Resume Found!</h2>
+                        <h3 class="section-subheading text-muted"></h3>
+                      </div>
+                </div>
+                {% endif %}
+                {% if student %}
+                <div class="col-lg-12 text-center"></div>
+                    <form  class = "form-horizontal" action = "{{ url_for('upload_resume') }}" method = "POST" enctype = "multipart/form-data">
+                        <div class="form-group">
+                                 <label for="file">Upload Resume:</label>
+                                    <input type="file" class="form-control" name="file" id="file" /> 
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                </div>
+                {% endif %}
             {% endif %}
-        {% endif %}
 
-    </body>
+            <div class = "col-md-6">
+            {% if studentdata[4] %}
+                <p class="text-muted">Github Handle: {{studentdata[4]}}</p>
+            {% else %}
+                {% if student %}
+                <form  class = "form-horizontal" action="{{ url_for('add_github_link') }}" method = "POST">
+                    <div class="form-group">
+                        <label for = "github">Add Github Handle:</label>
+                        <input class="form-group" type="text" name="github" id="github" />
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </form>
+                {% endif %}
+            {% endif %}   
+            </div>
+
+            <div class = "col-md-6">
+                    {% if studentdata[5] %}
+                        <p class="text-muted">Codeforces Handle: {{studentdata[5]}}</p>
+                    {% else %}
+                        {% if student %}
+                        <form  class = "form-horizontal" action="{{ url_for('add_codeforces_link') }}" method = "POST">
+                            <div class="form-group">
+                                <label for = "github">Add Codeforces Handle:</label>
+                                <input class="form-group" type="text" name="codeforces" id="codeforces" />
+                            </div>
+                            <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}   
+                    </div>
+
+
+          </div>
+        </div>
+      </section>
+  
+  
+					  <!-- Footer -->
+					  <footer>
+						<div class="container">
+						  <div class="row">
+							<div class="col-md-4">
+							  <span class="copyright">Copyright &copy; Projects4U 2018</span>
+							</div>
+							<div class="col-md-4">
+							  <ul class="list-inline social-buttons">
+								<li class="list-inline-item">
+								  <a href="#">
+									<i class="fab fa-twitter"></i>
+								  </a>
+								</li>
+								<li class="list-inline-item">
+								  <a href="#">
+									<i class="fab fa-facebook-f"></i>
+								  </a>
+								</li>
+								<li class="list-inline-item">
+								  <a href="#">
+									<i class="fab fa-linkedin-in"></i>
+								  </a>
+								</li>
+							  </ul>
+							</div>
+							<div class="col-md-4">
+							  <ul class="list-inline quicklinks">
+								<li class="list-inline-item">
+								  <a href="#">Privacy Policy</a>
+								</li>
+								<li class="list-inline-item">
+								  <a href="#">Terms of Use</a>
+								</li>
+							  </ul>
+							</div>
+						  </div>
+						</div>
+					  </footer>
+				  
+					  <!-- Portfolio Modals -->
+				  
+					  <!-- Modal 1 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/01-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Threads</li>
+									  <li>Category: Illustration</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Modal 2 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/02-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Explore</li>
+									  <li>Category: Graphic Design</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Modal 3 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/03-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Finish</li>
+									  <li>Category: Identity</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Modal 4 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/04-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Lines</li>
+									  <li>Category: Branding</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Modal 5 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/05-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Southwest</li>
+									  <li>Category: Website Design</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Modal 6 -->
+					  <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog">
+						  <div class="modal-content">
+							<div class="close-modal" data-dismiss="modal">
+							  <div class="lr">
+								<div class="rl"></div>
+							  </div>
+							</div>
+							<div class="container">
+							  <div class="row">
+								<div class="col-lg-8 mx-auto">
+								  <div class="modal-body">
+									<!-- Project Details Go Here -->
+									<h2 class="text-uppercase">Project Name</h2>
+									<p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+									<img class="img-fluid d-block mx-auto" src="{{ url_for('static',filename='img/portfolio/06-full.jpg') }}" alt="">
+									<p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
+									<ul class="list-inline">
+									  <li>Date: January 2017</li>
+									  <li>Client: Window</li>
+									  <li>Category: Photography</li>
+									</ul>
+									<button class="btn btn-primary" data-dismiss="modal" type="button">
+									  <i class="fas fa-times"></i>
+									  Close Project</button>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+				  
+					  <!-- Bootstrap core JavaScript -->
+					  <script src="vendor/jquery/jquery.min.js"></script>
+					  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+				  
+					  <!-- Plugin JavaScript -->
+					  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+				  
+					  <!-- Contact form JavaScript -->
+					  <script src="js/jqBootstrapValidation.js"></script>
+					  <script src="js/contact_me.js"></script>
+				  
+					  <!-- Custom scripts for this template -->
+					  <script src="js/agency.min.js"></script>
+				  
+					</body>
+				  
+				  </html>
+				  
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Contact form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+
+  </body>
 
 </html>
+
