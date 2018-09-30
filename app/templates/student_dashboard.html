@@ -149,6 +149,24 @@
             {%endif%}
         {%endif%}
 
+    <h3>College Input</h3>
+    {%if collegeInput%}
+         <p>College Input</p>
+         <form action = "{{ url_for('download_collegeInput', username=username) }}"><button type="submit">{{collegeInput}}</button></form>
+             {% if student %}
+             <form action = "{{ url_for('delete_collegeInput') }}"><button type="submit">Delete</button></form>
+             {%endif%}
+         {%else%}
+             {% if not student %}
+             <p>The user has not uploaded any college input</p>
+             {% endif %}
+             {% if student %}
+             <form action = "{{ url_for('upload_collegeInput') }}" method = "POST" enctype = "multipart/form-data">
+                 <input type = "file" name = "file" accept=".txt" />
+                 <input type = "submit"/>
+             </form>
+             {%endif%}
+         {%endif%}
 
     <!-- Portfolio -->
     <section id="portfolio">

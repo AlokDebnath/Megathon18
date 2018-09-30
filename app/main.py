@@ -56,11 +56,13 @@ def score_2_list(nounlist1, nounlist2):
     return score
 
 def score_3_list(nounlist1, nounlist2, nounlist3):
+    score = 0
+    nounhash = {}
     for noun in nounlist1:
         if noun not in nounhash.keys():
             nounhash[noun] = 1
         else:
-            nounhash[noun] += 1
+            nounhash[noun] = 1
     for noun in nounlist2:
         if noun not in nounhash.keys():
             nounhash[noun] = 1
@@ -72,10 +74,13 @@ def score_3_list(nounlist1, nounlist2, nounlist3):
         else:
             nounhash[noun] += 1
     for i in nounhash.keys():
-        if nounhash[i] == 2:
+        if nounhash[i] == 1:
             score += 1
+        if nounhash[i] == 2:
+            score += 2
         if nounhash[i] == 3:
             score += 10
+    print(nounhash)
     return score
 
 def getJobDesc():
@@ -107,7 +112,6 @@ def read_job_desc():
         titlemap.append([job[1], noun_finder(nltk.word_tokenize(job[0]))]) # job[0] is always the description
         if counter == 100:
             break
-    print(titlemap)
     return titlemap
 
 
@@ -136,10 +140,22 @@ def input_job_desc(description):
     count = 0
     for resume in all_resumes:
         nounlist2 = noun_finder(resume[1])
-        score = score_2_list(nounlist1, nounlist2)
+        user = resume[0]
+        if list_collegeInput(user):
+            f = open('./collegeInput/' + user + '/' + list_collegeInput(user))
+            desc = f.read()
+            nounlist3 = noun_finder(nltk.word_tokenize(desc))
+            score = score_3_list(nounlist1, nounlist2, nounlist3)
+        else:
+            score = score_2_list(nounlist1, nounlist2)
+        github_handle = dbHandler.getGithubHandle(user)
+        codeforces_handle = dbHandler.getCodeforcesHandle(user)
+        stars = getGithubDetails(github_handle)
+        rating = getCodeforcesDetails(codeforces_handle)
+        score += 10 * int(stars)
+        score += 10 * int(rating) / 1000
         scorelist[resume[0]] = score
         count += 1
-        print(count)
 
     return scorelist
 
@@ -149,18 +165,31 @@ def input_stud_desc(resumefile):
     regex = re.compile('^x..$')
     cleaned_cv = list(filter(lambda x: not regex.search(x), re.findall("[A-Z]{2,}(?![a-z])|[\w]+", cleaned_cv)))
     nounlist1 = noun_finder(cleaned_cv)
-    print(nounlist1)
     scorelist = {}
     count = 0
+    username = session['username']
+    proceed = False
+    scoreex = 0
+    github_handle = dbHandler.getGithubHandle(username)
+    codeforces_handle = dbHandler.getCodeforcesHandle(username)
+    stars = getGithubDetails(github_handle)
+    rating = getCodeforcesDetails(codeforces_handle)
+    scoreex += 10 * int(stars)
+    scoreex += 10 * int(rating) / 1000
+    if list_collegeInput(username):
+        proceed = True
+        f = open('./collegeInput/' + username + '/' + list_collegeInput(username))
+        nounlist3 = noun_finder(nltk.word_tokenize(f.read()))
     # All job descriptions
     jobs_descs = read_job_desc()
     for desc in jobs_descs:
         nounlist2 = desc[1]
-        print(nounlist2)
-        score = score_2_list(nounlist1, nounlist2)
-        scorelist[desc[0]] = score
+        if proceed:
+            score = score_3_list(nounlist1, nounlist2, nounlist3)
+        else:
+            score = score_2_list(nounlist1, nounlist2)
+        scorelist[desc[0]] = score + scoreex
         count += 1
-        print(count)
     return scorelist
 
 
@@ -199,9 +228,10 @@ def index():
             return render_template('recruiter_dashboard.html', students=students, company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
             resume = list_resume(username)
+            collegeInput = list_collegeInput(username)
             studentdata = dbHandler.getStudentData(username)
             companies = dbHandler.getAllCompanies()
-            return render_template('student_dashboard.html', companies=companies, username=username, resume=resume, student=True, studentdata=studentdata)
+            return render_template('student_dashboard.html', companies=companies, username=username, resume=resume, student=True, studentdata=studentdata, collegeInput=collegeInput)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -224,6 +254,9 @@ def student_register():
         name = request.form['name']
         dbHandler.insertStudent(username, password, email, name)
         upload_dir = './resumes/'
+        upload_dir = upload_dir + username
+        make_dir(upload_dir)
+        upload_dir = './collegeInput/'
         upload_dir = upload_dir + username
         make_dir(upload_dir)
         session['username'] = username
@@ -298,6 +331,26 @@ def list_resume(username):
     else:
         return onlyfiles[0]
 
+def list_collegeInput(username):
+     path = './collegeInput/' + username
+     onlyfiles = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+     if len(onlyfiles) == 0:
+         return False
+     else:
+         return onlyfiles[0]
+
+@app.route('/upload_collegeinput', methods = ['GET', 'POST'])
+def upload_collegeInput():
+    if 'username' in session:
+        username = session['username']
+        if request.method == 'POST':
+            file = request.files['file']
+            upload_dir = './collegeInput/'
+            upload_dir = upload_dir + username
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(upload_dir, filename))
+    return redirect(url_for('index'))
+
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_resume():
     if 'username' in session:
@@ -310,10 +363,22 @@ def upload_resume():
             file.save(os.path.join(upload_dir, filename))
     return redirect(url_for('index'))
 
+@app.route('/download/collegeInput/<username>', methods = ['GET', 'POST'])
+def download_collegeInput(username):
+    collegeInput = list_collegeInput(username)
+    return send_from_directory('./collegeInput/' + username, collegeInput, as_attachment=True)
+
 @app.route('/downloader/<username>', methods = ['GET', 'POST'])
 def download_resume(username):
     resume = list_resume(username)
     return send_from_directory('./resumes/' + username, resume, as_attachment=True)
+
+@app.route('/deletecollegeInput', methods = ['GET', 'POST'])
+def delete_collegeInput():
+    username = session['username']
+    collegeInput = list_collegeInput(username)
+    os.remove('./collegeInput/' + username + '/' + str(collegeInput))
+    return redirect(url_for('index'))
 
 @app.route('/deleter', methods = ['GET', 'POST'])
 def delete_resume():
@@ -361,7 +426,13 @@ def processed_search():
         resumename = list_resume(username)
         filepath = "./resumes/" + username + "/" + resumename
         scorelist = input_stud_desc(filepath)
-        return str(scorelist)
+        print(scorelist)
+        job_desc = {}
+        for key, value in scorelist.items():
+            desc = dbHandler.getJobDescription(key)
+            job_desc[desc[0]] = value
+        sorted_by_value = sorted(job_desc.items(), key=lambda kv: kv[1], reverse=True)
+        return render_template('processed_search.html', sorted_by_value=sorted_by_value)
 
 @app.route('/processed_search_candidate', methods = ['GET', 'POST'])
 def processed_search_candidate():
@@ -370,7 +441,8 @@ def processed_search_candidate():
         id = request.args.get('id')
         description = dbHandler.getJobDescription(id)
         scorelist = input_job_desc(description[0])
-        return str(scorelist)
+        sorted_by_value = sorted(scorelist.items(), key=lambda kv: kv[1], reverse=True)
+        return render_template('processed_search_candidate.html', sorted_by_value=sorted_by_value)
 
 
 @app.route('/user_search', methods=['GET', 'POST'])
@@ -405,7 +477,6 @@ def viewCompany():
 @app.route('/job', methods=['GET', 'POST'])
 def viewJob():
     job_id = request.args.get('job_id')
-    print(job_id)
     if 'username' in session:
         jobopening = dbHandler.getJob(job_id)
         return render_template('view_job.html', jobopening=jobopening)
@@ -432,27 +503,34 @@ def add_codeforces_link():
 def getGithubDetails(github_handle):
     stars = 0
     languages = []
+    if not github_handle:
+        return 0
     response = requests.get("https://api.github.com/users/" + github_handle + "/repos")
     data = response.json()
+    if data == None:
+        return stars
     for repo in data:
         stars = stars + repo['stargazers_count']
         if repo['language']:
             if repo['language'] not in languages:
                 languages.append(repo['language'])
-    print(stars)
-    print(languages)
+    return stars
 
 def getCodeforcesDetails(codeforces_handle):
     rating = 0
     rank = "unavailable"
+    if not codeforces_handle:
+        return 0
     response = requests.get("https://codeforces.com/api/user.info?handles=" + codeforces_handle)
     data = response.json()
-    for user in data['result']:
-        rating = user['rating']
-        rank = user['rank']
-    print(rating)
-    print(rank)
-
+    if not data:
+        rating = 0
+        rank = 0
+    else:
+        for user in data['result']:
+            rating = user['rating']
+            rank = user['rank']
+    return rating
 
 if __name__ == '__main__':
     app.run(debug=True)

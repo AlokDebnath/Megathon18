@@ -171,6 +171,20 @@ def addGithubLink(link, username):
     con.commit()
     con.close()
 
+def getGithubHandle(username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("SELECT github FROM students WHERE username='" + username + "'")
+    con.commit()
+    con.close()
+
+def getCodeforcesHandle(username):
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    cur.execute("SELECT codeforces FROM students WHERE username='" + username + "'")
+    con.commit()
+    con.close()
+
 def addCodeforcesLink(link, username):
     con = sql.connect("database.db")
     cur = con.cursor()
