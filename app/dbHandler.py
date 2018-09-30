@@ -9,7 +9,7 @@ def insertStudent(username, password, email, name):
     cur.execute("INSERT INTO students (name,username,password,email) VALUES (?,?,?,?)",
                 (name, username, password, email))
     con.commit()
-    con.close() 
+    con.close()
 
 def insertRecruiter(company, password, email):
     con = sql.connect("database.db")
@@ -130,14 +130,7 @@ def getJobs(title):
 def getJob(id):
     con = sql.connect("database.db")
     cur = con.cursor()
-    temp = cur.execute("SELECT company_id FROM job_openings WHERE id=" + str(id))
-    temp = temp.fetchone()
-    print(temp[0])
-    con.commit()
-    con.close()
-    con = sql.connect("database.db")
-    cur = con.cursor()
-    obj = cur.execute('select a.company_id, b.company, a.title, a.job_description from job_openings a, recruiters b where a.company_id=b.id and b.id = ' + str(temp[0]))
+    obj = cur.execute("SELECT a.company, b.title, b.job_description FROM recruiters a, job_openings b WHERE b.id=" + str(id) +" AND a.id=b.company_id")
     obj = obj.fetchone()
     print(obj)
     con.commit()
