@@ -27,6 +27,22 @@
         <h3>Username: {{username}}</h3>
         {% endif %}
 
+        {% if student %}
+        <table>
+            <tr>
+                <th>Company name</th>
+                <th>Job offers</th>
+            </tr>
+            {% for company in companies %}
+            <tr>
+                <td><a href="{{ url_for('viewCompany', company_id=company[2]) }}">{{company[0]}}</a></td>
+                <td>{{company[1]}}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+        {%endif%}
+
         {%if resume%}
         <p>Resume</p>
         <form action = "{{ url_for('download_resume', username=username) }}"><button type="submit">{{resume}}</button></form>

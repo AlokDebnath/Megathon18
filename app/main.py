@@ -33,11 +33,13 @@ def index():
         if re.match( "^.*@.*$", username):
             company = dbHandler.getCompany(username)
             jobopenings = dbHandler.getJobOpenings(username)
-            return render_template('recruiter_dashboard.html', company=company[0], jobopenings=jobopenings, recruiter=True)
+            students = dbHandler.getAllStudents()
+            return render_template('recruiter_dashboard.html', students=students, company=company[0], jobopenings=jobopenings, recruiter=True)
         else:
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
-            return render_template('student_dashboard.html', username=username, resume=resume, student=True, studentdata=studentdata)
+            companies = dbHandler.getAllCompanies()
+            return render_template('student_dashboard.html', companies=companies, username=username, resume=resume, student=True, studentdata=studentdata)
     return render_template('index.html')
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -164,8 +166,9 @@ def create_job_opening():
         if request.method == 'POST':
             email = session['username']
             title = request.form['title']
+            job_description = request.form['job_description']
             company_id = dbHandler.getCompanyID(email)
-            dbHandler.createJobOpening(company_id, title)
+            dbHandler.createJobOpening(company_id, title, job_description)
     return redirect(url_for('index'))
 
 @app.route('/delete_opening', methods = ['GET', 'POST'])
@@ -192,9 +195,17 @@ def search_candidate():
         if request.method == 'POST':
             username = request.form['search']
             name = dbHandler.getUser(username)
+            studentdata = dbHandler.getStudentData(username)
+            if not studentdata:
+                return redirect(url_for('index'))
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
             return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
+        username = request.args.get('student')
+        name = dbHandler.getUser(username)
+        resume = list_resume(username)
+        studentdata = dbHandler.getStudentData(username)  
+        return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)
     return redirect(url_for('index'))
 
 @app.route('/company', methods=['GET', 'POST'])
