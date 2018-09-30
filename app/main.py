@@ -166,8 +166,9 @@ def create_job_opening():
         if request.method == 'POST':
             email = session['username']
             title = request.form['title']
+            job_description = request.form['job_description']
             company_id = dbHandler.getCompanyID(email)
-            dbHandler.createJobOpening(company_id, title)
+            dbHandler.createJobOpening(company_id, title, job_description)
     return redirect(url_for('index'))
 
 @app.route('/delete_opening', methods = ['GET', 'POST'])
@@ -194,6 +195,9 @@ def search_candidate():
         if request.method == 'POST':
             username = request.form['search']
             name = dbHandler.getUser(username)
+            studentdata = dbHandler.getStudentData(username)
+            if not studentdata:
+                return redirect(url_for('index'))
             resume = list_resume(username)
             studentdata = dbHandler.getStudentData(username)
             return render_template('student_dashboard.html', studentdata=studentdata, student=False, username=username, name=name[0], resume=resume)

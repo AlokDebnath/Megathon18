@@ -22,5 +22,6 @@ drop table if exists job_openings;
         id integer primary key autoincrement,
         company_id integer not null,
         title text not null,
+        job_description text,
         FOREIGN KEY("company_id") REFERENCES recruiters("id") ON DELETE CASCADE
     );

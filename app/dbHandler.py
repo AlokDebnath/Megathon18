@@ -93,11 +93,11 @@ def getCompanyEmail(id):
     con.close()
     return obj[0]
 
-def createJobOpening(company_id, title):
+def createJobOpening(company_id, title, job_description):
     con = sql.connect("database.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO job_openings (company_id,title) VALUES (?,?)",
-                (company_id, title))
+    cur.execute("INSERT INTO job_openings (company_id,title,job_description) VALUES (?,?,?)",
+                (company_id, title, job_description))
     con.commit()
     con.close()
 
@@ -112,7 +112,7 @@ def getJobOpenings(email):
     company_id = getCompanyID(email)
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute("SELECT title, id FROM job_openings WHERE company_id=='{0}'".format(company_id))
+    obj = cur.execute("SELECT title, id, job_description FROM job_openings WHERE company_id=='{0}'".format(company_id))
     obj = obj.fetchall()
     con.commit()
     con.close()
