@@ -130,8 +130,16 @@ def getJobs(title):
 def getJob(id):
     con = sql.connect("database.db")
     cur = con.cursor()
-    obj = cur.execute("SELECT company, title, job_description FROM job_openings INNER JOIN recruiters ON recruiters.id = job_openings.company_id")
+    temp = cur.execute("SELECT company_id FROM job_openings WHERE id=" + str(id))
+    temp = temp.fetchone()
+    print(temp[0])
+    con.commit()
+    con.close()
+    con = sql.connect("database.db")
+    cur = con.cursor()
+    obj = cur.execute('select a.company_id, b.company, a.title, a.job_description from job_openings a, recruiters b where a.company_id=b.id and b.id = ' + str(temp[0]))
     obj = obj.fetchone()
+    print(obj)
     con.commit()
     con.close()
     return obj

@@ -221,6 +221,7 @@ def viewCompany():
 @app.route('/job', methods=['GET', 'POST'])
 def viewJob():
     job_id = request.args.get('job_id')
+    print(job_id)
     if 'username' in session:
         jobopening = dbHandler.getJob(job_id)
         return render_template('view_job.html', jobopening=jobopening)
